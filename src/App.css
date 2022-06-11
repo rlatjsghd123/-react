@@ -1,0 +1,16 @@
+.black_nav {
+    background-color: black;
+    width: 100%;
+    display: flex;
+    color: white;
+    padding:  20px;
+    font-weight:  600;
+    font-size:  20px;
+    box-sizing:  border-box;
+}
+
+.list{
+    margin-top: 30px;
+    text-align:  left;
+    padding: 0 20px;
+}

@@ -1,161 +1,61 @@
+
 import { func } from 'prop-types';
-import { useState } from "react";
+import React, { useState } from "react";
+import "./App.css";
 
+function MinutesToHours() {
+  const [amount, setAmount] = useState();
+  const [flip, setFlip] = useState(false);
+return  (
+  <div>
+    <div>
+        <label htmlFor="minutes">minutes</label>
+    <input disabled={flip} value={flip ? Math.floor(amount*60) : amount} id="minutes" type="number" placeholder='Minutes' onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <div>
+    <label htmlFor="hours">hours</label>
+    <input disabled={!flip} value={!flip ? Math.floor(amount/60) : amount} id="hours" type="number" placeholder='Hours' onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <button onClick={()=>{setAmount(0); }}>초기화</button>
+    <button onClick={()=> {setFlip((current)=>!current); setAmount("");}}>뒤집기</button>
+  </div>
+    )
+}
+function KmToMiles(){
+  const [amount, setAmount] = useState();
+  const [boolean,setBoolean] = useState(true);
+return  (
+  <div>
+    <div>
+      <label htmlFor="km">KM</label>
+      <input id="km" disabled={!boolean} value={boolean ? amount : Math.floor(amount/1000)} type="number" placeholder="Km" onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <div>
+      <label htmlFor="miles">Miles</label>
+      <input id="miles" disabled={boolean} value={!boolean ? amount : Math.floor(amount*1000)} type="number" placeholder="Mile" onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <button onClick={()=>setAmount(0)}>초기화</button>
+    <button onClick={()=>{setBoolean((current)=> !current); setAmount("");}}>뒤집기</button>
+  </div>
+    )
+}
 
-function Header(props){
-  return(
-  <header><h1>
-    <a onClick={(event) =>{
-      event.preventDefault();
-      props.onChangeMode();
-      }} href='#'>{props.title}</a>
-    </h1></header>
-  )
-}
-function Nav(props){
-  const lis = []
-  for(let i=0; i<props.topics.length; i++){
-    let t = props.topics[i];
-    lis.push(<li key={t.id}>
-      <a id={t.id} href={'/read/'+t.id} onClick={event=>{
-        event.preventDefault();
-        props.onChangeMode(Number(event.target.id));
-      }}>{t.title}</a>
-    </li>)
-  }
-  return <nav>
-    <ol>
-      {lis}
-    </ol>
-  </nav>
-}
-function Article(props){
-  return(
-      <article>
-        <h2>{props.title}</h2>
-        {props.body}
-      </article>
-  )
-}
-function Create(props){
-  return <article>
-    <h2>Create</h2>
-    <form onSubmit={event=>{
-      event.preventDefault();
-      const title = event.target.title.value;
-      const body = event.target.body.value;
-      props.onCreateMode(title, body);
-    }}>
-      <p><input type="text" name="title" placeholder="title"/></p>
-      <p><textarea name="body" placeholder="body"></textarea></p>
-      <p><input type="submit" value="Create"></input></p>
-    </form>
-  </article>
-}
-function Update(props){
-  const [title, setTitle] = useState(props.title);
-  const [body, setBody] = useState(props.body);
-  return <article>
-    <h2>Update</h2>
-    <form onSubmit={event=>{
-      event.preventDefault();
-      const title = event.target.title.value;
-      const body = event.target.body.value;
-      props.onUpdateMode(title, body);
-    }}>
-      <p><input type="text" name="title" placeholder="title" value={title} onChange={(event)=> setTitle(event.target.value)}/></p>
-      <p><textarea name="body" placeholder="body" value={body} onChange={(event)=> setBody(event.target.value)}></textarea></p>
-      <p><input type="submit" value="Update"></input></p>
-    </form>
-  </article>
-}
 
 function App() {
-  const [mode, setMode] = useState("welcome");
-  const [id, setId] = useState(null);
-  const [nextId, setNextId] = useState(4);
-  const [topics, setTopics] = useState([
-      {id:1, title:"html", body:"html is..."}, 
-      {id:2, title:"css", body:"css is..."},
-      {id:3, title:"js", body:"js is..."},
-    ]);
-    let content = null;
-    let contextControls = null;
-    if(mode ==="welcome"){
-      content =  <Article title="welcome" body="Hello, WEB"></Article>
-    } else if(mode === "read"){
-      let title, body = null;
-      for(let i=0; i < topics.length; i++){
-          if(topics[i].id === id){
-           title = topics[i].title;
-           body = topics[i].body;
-          }
-      }
-      content = <Article title={title} body={body}></Article>
-      contextControls = <>
-      <li><a href={"/update/"+ id} onClick={(event)=>{
-        event.preventDefault();
-        setMode("update");
-      }}>update</a></li>
-      <li><input type="button" value="Delete"
-      onClick={()=>{
-        const DeleteTopic = [];
-        for(let i=0; i < topics.length; i++){
-          if(topics[i].id !== id){
-            DeleteTopic.push(topics[i]);
-          }
-        }
-        setTopics(DeleteTopic);
-        setMode("welcome");
-      }}>
-        </input></li>
-      </>
-    } else if(mode === "Create"){
-      content = <Create onCreateMode={(_title, _body)=>{
-        const newTopic = {id:nextId, title:_title, body:_body};
-        const newTopics = [...topics];
-        newTopics.push(newTopic);
-        setTopics(newTopics);
-        setMode("read");
-        setNextId(nextId);
-        setNextId(nextId+1);
-      }}></Create>
-    } else if(mode === "update"){
-      let title, body = null;
-      for(let i=0; i < topics.length; i++){
-        if(topics[i].id === id){
-         title = topics[i].title;
-         body = topics[i].body;
-        }
-    }
-      content = <Update title={title} body={body} onUpdateMode={(title, body)=>{
-          const UpdatedTopic = {id:id, title:title, body:body};
-          const newTopics = [...topics];
-          for(let i = 0; i < newTopics.length; i++){
-            if(newTopics[i].id === id){
-              newTopics[i] = UpdatedTopic;
-              break;
-            }
-          }
-          setTopics(newTopics);
-          setMode("read");
-        }}></Update>
-    }
-    
-  return (
-    <div>
-      <Header title="REACT" onChangeMode={() =>setMode("welcome")}></Header>
-      <Nav topics={topics} onChangeMode={(_id) =>{
-        setMode("read");
-        setId(_id);
-      }}></Nav>
-      {content}
-      <ul>
-        <li><a href='#' onClick={(event)=> {event.preventDefault(); setMode("Create");}}>Create</a></li>
-        {contextControls}
-      </ul>
-    </div>
-  )
+  const [index, setIndex] = useState(0)
+return  (
+  <div>
+    <h1>변환기</h1>
+  <select value={index} onChange={(event)=>{setIndex(event.target.value)}}>
+  <option>------------</option>
+    <option value="1">Hours & Minutes</option>
+    <option value="2">Km & Miles</option>
+  </select>
+  <hr/>
+  {(index === "1") ? <MinutesToHours></MinutesToHours> : null}
+  {(index === "2") ? <KmToMiles></KmToMiles> : null}
+  </div>
+    )
 }
 
 export default App;
