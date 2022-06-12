@@ -1,61 +1,56 @@
 
-import { func } from 'prop-types';
-import React, { useState } from "react";
+import { useState, useEffect } from 'react';
 import "./App.css";
 
-function MinutesToHours() {
-  const [amount, setAmount] = useState();
+function App(){
+  const [converter,setConverter] = useState();
+  const [cost,setCost] = useState();
+  const [loading, setLoading] = useState(true);
   const [flip, setFlip] = useState(false);
-return  (
-  <div>
-    <div>
-        <label htmlFor="minutes">minutes</label>
-    <input disabled={flip} value={flip ? Math.floor(amount*60) : amount} id="minutes" type="number" placeholder='Minutes' onChange={(event)=>{setAmount(event.target.value)}}></input>
-    </div>
-    <div>
-    <label htmlFor="hours">hours</label>
-    <input disabled={!flip} value={!flip ? Math.floor(amount/60) : amount} id="hours" type="number" placeholder='Hours' onChange={(event)=>{setAmount(event.target.value)}}></input>
-    </div>
-    <button onClick={()=>{setAmount(0); }}>초기화</button>
-    <button onClick={()=> {setFlip((current)=>!current); setAmount("");}}>뒤집기</button>
-  </div>
-    )
-}
-function KmToMiles(){
-  const [amount, setAmount] = useState();
-  const [boolean,setBoolean] = useState(true);
-return  (
-  <div>
-    <div>
-      <label htmlFor="km">KM</label>
-      <input id="km" disabled={!boolean} value={boolean ? amount : Math.floor(amount/1000)} type="number" placeholder="Km" onChange={(event)=>{setAmount(event.target.value)}}></input>
-    </div>
-    <div>
-      <label htmlFor="miles">Miles</label>
-      <input id="miles" disabled={boolean} value={!boolean ? amount : Math.floor(amount*1000)} type="number" placeholder="Mile" onChange={(event)=>{setAmount(event.target.value)}}></input>
-    </div>
-    <button onClick={()=>setAmount(0)}>초기화</button>
-    <button onClick={()=>{setBoolean((current)=> !current); setAmount("");}}>뒤집기</button>
-  </div>
-    )
-}
+  const [coins, setCoins] = useState([]);
+  useEffect(()=>{
+    fetch("https://api.coinpaprika.com/v1/tickers")
+    .then((response) => response.json())
+    .then((json) =>{
+      setCoins(json);
+      setLoading(false);
+    })
+  },[])
+  const haddleInput = (event) => {
+    setConverter(event.target.value);
+  }
+    const onChange = (event) => {
+      setCost(event.target.value);
+    }
+    const onClick = () =>{
+      setFlip((prev) => !prev)
+    }
 
-
-function App() {
-  const [index, setIndex] = useState(0)
-return  (
-  <div>
-    <h1>변환기</h1>
-  <select value={index} onChange={(event)=>{setIndex(event.target.value)}}>
-  <option>------------</option>
-    <option value="1">Hours & Minutes</option>
-    <option value="2">Km & Miles</option>
-  </select>
-  <hr/>
-  {(index === "1") ? <MinutesToHours></MinutesToHours> : null}
-  {(index === "2") ? <KmToMiles></KmToMiles> : null}
-  </div>
-    )
+  return(
+    <div>
+      <h1>코인! {loading ? "" : `(${coins.length})`} </h1>
+      {loading ? <strong>"로딩중..."</strong> : 
+      <>
+      <select onChange={onChange}>
+        <option>Select Coins!!</option>
+          {coins.map((coin) => (
+            <option key={coin.id} value={coin.quotes.USD.price}>
+              {coin.name} ({coin.symbol}): ${coin.quotes.USD.price} USD
+            </option>
+          ))}
+        </select>
+        <hr/>
+        <div>
+        <label htmlFor="money">$USD</label>
+        <input value={!flip ? converter : converter*cost} disabled={flip} onChange={haddleInput} id="money" type="number" placeholder="$USD"></input>
+      </div>
+      <div>
+        <label htmlFor="coin">COINS</label>
+        <input id="coin" value={flip ? converter : converter/cost} disabled={!flip} onChange={haddleInput} type="number" placeholder="COINS"></input>
+      </div>
+      <button onClick={onClick}>반대로</button>
+        </>}
+    </div>
+  )
 }
-
 export default App;

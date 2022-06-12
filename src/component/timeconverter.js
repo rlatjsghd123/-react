@@ -1,51 +1,54 @@
-
-
-function App(){
-  const [minutes, setMinutes] = React.useState(0); 
-  const [flipped, setFlipped] = React.useState(false);
-    function onChange(e){
-      setMinutes(e.target.value);      
-    }
-
-    const reset = () => (setMinutes(0));
-    const onFlip = () => setFlipped((current) => !current)
-    return(
+function MinutesToHours() {
+  const [amount, setAmount] = useState();
+  const [flip, setFlip] = useState(false);
+return  (
+  <div>
     <div>
-      <h1>Super Conventer</h1>
-      <div>
-        <label htmlFor='minutes'>minutes</label>
-        <input 
-        id="minutes" 
-        placeholder='Minutes' 
-        type='number' 
-        value={flipped ? minutes*60 : minutes} 
-        onChange={onChange} 
-        disabled={flipped}/>
-      </div>
-      <div>
-        <label htmlFor='hours'>hours</label>
-        <input 
-        id='hours' 
-        placeholder='Hours' 
-        type='number'
-        value={flipped ? minutes : Math.round(minutes/60)} 
-        onChange={onChange} 
-        disabled={!flipped}/>
-      </div>
-        <button onClick={reset}>reset</button>
-        <button onClick={onFlip}>Flip</button>
+        <label htmlFor="minutes">minutes</label>
+    <input disabled={flip} value={flip ? Math.floor(amount*60) : amount} id="minutes" type="number" placeholder='Minutes' onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <div>
+    <label htmlFor="hours">hours</label>
+    <input disabled={!flip} value={!flip ? Math.floor(amount/60) : amount} id="hours" type="number" placeholder='Hours' onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <button onClick={()=>{setAmount(0); }}>초기화</button>
+    <button onClick={()=> {setFlip((current)=>!current); setAmount("");}}>뒤집기</button>
+  </div>
+    )
+}
+function KmToMiles(){
+  const [amount, setAmount] = useState();
+  const [boolean,setBoolean] = useState(true);
+return  (
+  <div>
+    <div>
+      <label htmlFor="km">KM</label>
+      <input id="km" disabled={!boolean} value={boolean ? amount : Math.floor(amount/1000)} type="number" placeholder="Km" onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <div>
+      <label htmlFor="miles">Miles</label>
+      <input id="miles" disabled={boolean} value={!boolean ? amount : Math.floor(amount*1000)} type="number" placeholder="Mile" onChange={(event)=>{setAmount(event.target.value)}}></input>
+    </div>
+    <button onClick={()=>setAmount(0)}>초기화</button>
+    <button onClick={()=>{setBoolean((current)=> !current); setAmount("");}}>뒤집기</button>
   </div>
     )
 }
 
-  ReactDOM.render(
-    <App />,
-    document.getElementById('root')
-  );
 
-
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+function App() {
+  const [index, setIndex] = useState(0)
+return  (
+  <div>
+    <h1>변환기</h1>
+  <select value={index} onChange={(event)=>{setIndex(event.target.value)}}>
+  <option>------------</option>
+    <option value="1">Hours & Minutes</option>
+    <option value="2">Km & Miles</option>
+  </select>git commit -m "first commit"
+  <hr/>
+  {(index === "1") ? <MinutesToHours></MinutesToHours> : null}
+  {(index === "2") ? <KmToMiles></KmToMiles> : null}
+  </div>
+    )
+}
