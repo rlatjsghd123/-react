@@ -45,7 +45,7 @@ return  (
   <option>------------</option>
     <option value="1">Hours & Minutes</option>
     <option value="2">Km & Miles</option>
-  </select>git commit -m "first commit"
+  </select>
   <hr/>
   {(index === "1") ? <MinutesToHours></MinutesToHours> : null}
   {(index === "2") ? <KmToMiles></KmToMiles> : null}
